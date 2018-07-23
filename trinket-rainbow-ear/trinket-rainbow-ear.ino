@@ -38,6 +38,10 @@ int rightNub = 41;
 int rightEar[] = {49, 48, 47, 46, 45, 44, 43, 42};
 int figureEight[] = {leftEye[15], leftEye[14], leftEye[13], leftEye[12], leftEye[11], leftEye[10], leftEye[9], leftEye[8], rightEye[7], rightEye[6], rightEye[5], rightEye[4], rightEye[3], rightEye[2], rightEye[1], rightEye[0], rightEye[15], rightEye[14], rightEye[13], rightEye[12], rightEye[11], rightEye[10], rightEye[9], rightEye[8], leftEye[7], leftEye[6], leftEye[5], leftEye[4], leftEye[3], leftEye[2], leftEye[1], leftEye[0]};
 
+// debouncing variables
+#define switchGoStart 5
+int switchGo = switchGoStart;
+
 void setup() {
 #ifdef __AVR_ATtiny85__ // Trinket, Gemma, etc.
   if (F_CPU == 16000000) clock_prescale_set(clock_div_1);
@@ -102,13 +106,20 @@ void loop() {
   pixels.show();
   delay(80);
 
+  if (switchGo != 0) {
+    switchGo--;
+  }
+
   // TODO: Debounce switch button
   if (! digitalRead(SWITCHPIN)) {    // Every 8 seconds...
-    mode++;                        // Next mode
-    if (mode > 8) {                // End of modes?
-      mode = 0;                    // Start modes over
+    if (switchGo <= 0) {
+      mode++;                        // Next mode
+      if (mode > 8) {                // End of modes?
+        mode = 0;                    // Start modes over
+      }
+      for (i = 0; i < 50; i++) pixels.setPixelColor(i, 0);
+      switchGo = switchGoStart;
     }
-    for (i = 0; i < 50; i++) pixels.setPixelColor(i, 0);
   }
 }
 
