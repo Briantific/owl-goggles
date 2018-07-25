@@ -15,10 +15,10 @@
 CRGB leds[NUM_LEDS];
 
 // colors to be reused
-uint32_t colorArray[] = {CRGB::Red, CRGB::Orange, CRGB::Yellow, CRGB::Lime, CRGB::Turquoise, CRGB::Blue, CRGB::BlueViolet, CRGB::Magenta};
+uint32_t colorArray[] = {CRGB::Red, CRGB::Orange, CRGB::Yellow, CRGB::Lime, 0x00FFFF, CRGB::Blue, 0x8800FF, CRGB::Magenta};
 
 //uint32_t nowColor = colorRed;
-uint8_t  mode   = 8, // Current animation effect
+uint8_t  mode   = 0, // Current animation effect
          offset = 0, // Position of spinny eyes
          offsetEar = 0;  // Position of zippy ears
 
@@ -54,59 +54,47 @@ void loop() {
   uint32_t t;
 
   switch (mode) {
-    case 0:
-      eightLoop(colorArray[0], 0);
+    case 0: // white sparkles with rainbow ears
+      eightLoop(CRGB::White);
+      daftPulse();
+      nubBlink(CRGB::White);
+      t = 75;
+      break;
+    case 1: // red synchronized circles
+      eightLoop(colorArray[0]);
       daftPulse();
       nubBlink(colorArray[0]);
       t = 75;
       break;
-    case 1:
-      eightLoop(colorArray[1], 1);
+    case 2:
+      eightLoop(colorArray[1]);
       daftPulse();
       nubBlink(colorArray[1]);
       t = 55;
       break;
-    case 2:
-      eightLoop(colorArray[2], 0);
+    case 3:
+      eightLoop(colorArray[2]);
       daftPulse();
       nubBlink(colorArray[2]);
       t = 50;
       break;
-    case 3:
-      eightLoop(colorArray[3], 1);
+    case 4:
+      eightLoop(colorArray[3]);
       daftPulse();
       nubBlink(colorArray[3]);
       t = 75;
       break;
-    case 4:
-      eightLoop(colorArray[4], 0);
-      daftPulse();
-      nubBlink(colorArray[4]);
-      t = 128;
-      break;
     case 5:
-      eightLoop(colorArray[5], 1);
+      eightLoop(colorArray[5]);
       daftPulse();
       nubBlink(colorArray[5]);
       t = 66;
       break;
     case 6:
-      eightLoop(colorArray[6], 0);
-      daftPulse();
-      nubBlink(colorArray[6]);
-      t = 111;
-      break;
-    case 7:
-      eightLoop(colorArray[7], 1);
+      eightLoop(colorArray[7]);
       daftPulse();
       nubBlink(colorArray[7]);
       t = 128;
-      break;
-    case 8:
-      eightLoop(CRGB::White, 0);
-      daftPulse();
-      nubBlink(CRGB::White);
-      t = 75;
       break;
   }
 
@@ -117,7 +105,6 @@ void loop() {
     switchGo--;
   }
 
-  // TODO: Debounce switch button
   if (! digitalRead(SWITCHPIN)) {    // Every 8 seconds...
     if (switchGo <= 0) {
       mode++;                        // Next mode
@@ -165,13 +152,15 @@ void nubBlink(uint32_t sentColor) {
   }
 }
 
-void eightLoop(uint32_t sentColor, uint8_t sentMode) {
+void eightLoop(uint32_t sentColor) {
   uint8_t  i;
   // Spin the lenses
   for (i = 0; i < 16; i++) {
-    switch (sentMode) {
-      case 0:
-        if (i == (offset % 16) || i == ((offset % 16) + 1)) {
+    switch (mode) {
+      case 1:
+      case 3:
+      case 5:
+        if (i == (offset % 16)) {
           leds[leftEye[i]] = sentColor; // both eyes in a figure 8
           leds[rightEye[i]] = sentColor; // both eyes in a figure 8
         } else {
@@ -179,7 +168,10 @@ void eightLoop(uint32_t sentColor, uint8_t sentMode) {
           leds[rightEye[i]].fadeToBlackBy(200); // both eyes in a figure 8
         }
         break;
-      case 1:
+      case 0:
+      case 2:
+      case 4:
+      case 6:
         leds[leftEye[i]].fadeToBlackBy(200); // both eyes in a figure 8
         leds[rightEye[i]].fadeToBlackBy(200); // both eyes in a figure 8
         uint8_t ledA = random8(9,25);
@@ -192,4 +184,3 @@ void eightLoop(uint32_t sentColor, uint8_t sentMode) {
   offset++;
   if (offset == 16) offset = 0;
 }
-
