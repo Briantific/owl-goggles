@@ -23,16 +23,16 @@ uint8_t  mode   = 0, // Current animation effect
          offsetEar = 0;  // Position of zippy ears
 
 // element pin arrays
-int leftEar[] = {0, 1, 2, 3, 4, 5, 6, 7};
-int leftNub = 8;
-int leftEye[] = {14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 9, 10, 11, 12, 13};
-int rightEye[] = {36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 40, 39, 38, 37};
-int rightNub = 41;
-int rightEar[] = {49, 48, 47, 46, 45, 44, 43, 42};
+//int leftEar[] = {0, 1, 2, 3, 4, 5, 6, 7};
+const uint8_t leftNub = 8;
+const uint8_t leftEye[] = {14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 9, 10, 11, 12, 13};
+const uint8_t rightEye[] = {36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 40, 39, 38, 37};
+const uint8_t rightNub = 41;
+const uint8_t rightEar[] = {49, 48, 47, 46, 45, 44, 43, 42};
 
 // debouncing variables
 #define switchGoStart 5
-int switchGo = switchGoStart;
+int8_t switchGo = switchGoStart;
 
 void setup() {
 #ifdef __AVR_ATtiny85__ // Trinket, Gemma, etc.
@@ -50,8 +50,8 @@ void setup() {
 }
 
 void loop() {
-  uint8_t  i;
-  uint32_t t;
+  uint8_t i;
+  uint8_t t;
 
   switch (mode) {
     case 0: // white sparkles with rainbow ears
@@ -125,10 +125,10 @@ void daftPulse() {
 
   for (j = 0; j < 8; j++) {
     if (bounceValue > j) {
-      leds[leftEar[j]] = colorArray[j];  //left ear
+      leds[j] = colorArray[j];  //left ear
       leds[rightEar[j]] = colorArray[j]; // right ear
     } else {
-      leds[leftEar[j]] = CRGB::Black;  //left ear
+      leds[j] = CRGB::Black;  //left ear
       leds[rightEar[j]] = CRGB::Black; // right ear
     }
   }
@@ -156,10 +156,10 @@ void eightLoop(uint32_t sentColor) {
   uint8_t  i;
   // Spin the lenses
   for (i = 0; i < 16; i++) {
+    uint8_t icross = (i + 8) % 16;
     switch (mode) {
       case 1:
       case 3:
-      case 5:
         if (i == (offset % 16)) {
           leds[leftEye[i]] = sentColor; // both eyes in a figure 8
           leds[rightEye[i]] = sentColor; // both eyes in a figure 8
@@ -168,8 +168,21 @@ void eightLoop(uint32_t sentColor) {
           leds[rightEye[i]].fadeToBlackBy(200); // both eyes in a figure 8
         }
         break;
-      case 0:
       case 2:
+      case 5:
+        if (i == (offset % 8)) {
+          leds[leftEye[i]] = sentColor; // both eyes in a figure 8
+          leds[rightEye[i]] = sentColor; // both eyes in a figure 8
+          leds[leftEye[icross]] = sentColor; // both eyes in a figure 8
+          leds[rightEye[icross]] = sentColor; // both eyes in a figure 8
+        } else {
+          leds[leftEye[i]].fadeToBlackBy(200); // both eyes in a figure 8
+          leds[rightEye[i]].fadeToBlackBy(200); // both eyes in a figure 8
+          leds[leftEye[icross]].fadeToBlackBy(200); // both eyes in a figure 8
+          leds[rightEye[icross]].fadeToBlackBy(200); // both eyes in a figure 8
+        }
+        break;
+      case 0:
       case 4:
       case 6:
         leds[leftEye[i]].fadeToBlackBy(200); // both eyes in a figure 8
