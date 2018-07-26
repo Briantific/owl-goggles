@@ -2,9 +2,7 @@
 // with just a few LEDs on at any time.
 
 #include <FastLED.h>
-#ifdef __AVR_ATtiny85__ // Trinket, Gemma, etc.
 #include <avr/power.h>
-#endif
 
 #define LIGHTPIN 4
 #define SWITCHPIN 2
@@ -15,7 +13,7 @@
 CRGB leds[NUM_LEDS];
 
 // colors to be reused
-uint32_t colorArray[] = {CRGB::Red, CRGB::Orange, CRGB::Yellow, CRGB::Lime, 0x00FFFF, CRGB::Blue, 0x8800FF, CRGB::Magenta};
+const uint32_t colorArray[] = {CRGB::Red, CRGB::Orange, CRGB::Yellow, CRGB::Lime, 0x00FFFF, CRGB::Blue, 0x8800FF, CRGB::Magenta};
 
 //uint32_t nowColor = colorRed;
 uint8_t  mode   = 0, // Current animation effect
@@ -27,6 +25,8 @@ uint8_t  mode   = 0, // Current animation effect
 const uint8_t leftNub = 8;
 const uint8_t leftEye[] = {14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 9, 10, 11, 12, 13};
 const uint8_t rightEye[] = {36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 40, 39, 38, 37};
+const uint8_t leftEyeReverse[] = {13, 12, 11, 10, 9, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14};
+const uint8_t rightEyeReverse[] = {37, 38, 39, 40, 25, 26, 27, 28, 29, 30, 21, 32, 33, 34, 35, 36};
 const uint8_t rightNub = 41;
 const uint8_t rightEar[] = {49, 48, 47, 46, 45, 44, 43, 42};
 
@@ -35,13 +35,11 @@ const uint8_t rightEar[] = {49, 48, 47, 46, 45, 44, 43, 42};
 int8_t switchGo = switchGoStart;
 
 void setup() {
-#ifdef __AVR_ATtiny85__ // Trinket, Gemma, etc.
   if (F_CPU == 16000000) clock_prescale_set(clock_div_1);
-#endif
-    
+
   // tell FastLED about the LED strip configuration
-  FastLED.addLeds<LED_TYPE,LIGHTPIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
-  
+  FastLED.addLeds<LED_TYPE, LIGHTPIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+
   // set master brightness control
   FastLED.setBrightness(BRIGHTNESS);
 
@@ -61,7 +59,7 @@ void loop() {
       t = 75;
       break;
     case 1: // red synchronized circles
-      eightLoop(colorArray[0]);
+      eightLoop(CRGB::Red);
       daftPulse();
       nubBlink(colorArray[0]);
       t = 75;
@@ -108,10 +106,10 @@ void loop() {
   if (! digitalRead(SWITCHPIN)) {    // Every 8 seconds...
     if (switchGo <= 0) {
       mode++;                        // Next mode
-      if (mode > 8) {                // End of modes?
+      if (mode > 6) {                // End of modes?
         mode = 0;                    // Start modes over
       }
-      for (i = 0; i < 50; i++){
+      for (i = 0; i < 50; i++) {
         leds[i] = CRGB::Black;
       }
       switchGo = switchGoStart;
@@ -121,7 +119,7 @@ void loop() {
 
 void daftPulse() {
   uint8_t j;
-  int bounceValue = bounceNum(offsetEar, 8);
+  uint8_t bounceValue = bounceNum(offsetEar, 8);
 
   for (j = 0; j < 8; j++) {
     if (bounceValue > j) {
@@ -137,7 +135,7 @@ void daftPulse() {
   if (offsetEar == 16) offset = 0;
 }
 
-int bounceNum(int n, int max)
+uint8_t bounceNum(int n, int max)
 {
   return abs(((n % (max * 2)) - max) * (1 - (((n / (max * 2)) % 2) * 2)));
 }
@@ -187,8 +185,8 @@ void eightLoop(uint32_t sentColor) {
       case 6:
         leds[leftEye[i]].fadeToBlackBy(200); // both eyes in a figure 8
         leds[rightEye[i]].fadeToBlackBy(200); // both eyes in a figure 8
-        uint8_t ledA = random8(9,25);
-        uint8_t ledB = random8(25,41);
+        uint8_t ledA = random8(9, 25);
+        uint8_t ledB = random8(25, 41);
         leds[ledA] = sentColor; // both eyes in a figure 8
         leds[ledB] = sentColor; // both eyes in a figure 8
         break;
