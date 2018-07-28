@@ -159,36 +159,36 @@ void eightLoop(uint32_t sentColor) {
       case 1:
       case 3:
         if (i == (offset % 16)) {
-          leds[leftEye[i]] = sentColor; // both eyes in a figure 8
-          leds[rightEye[i]] = sentColor; // both eyes in a figure 8
+          leds[leftEye[i]] = sentColor;
+          leds[rightEye[i]] = sentColor;
         } else {
-          leds[leftEye[i]].fadeToBlackBy(200); // both eyes in a figure 8
-          leds[rightEye[i]].fadeToBlackBy(200); // both eyes in a figure 8
+          leds[leftEye[i]].fadeToBlackBy(200);
+          leds[rightEye[i]].fadeToBlackBy(200);
         }
         break;
       case 2:
       case 5:
         if (i == (offset % 8)) {
-          leds[leftEye[i]] = sentColor; // both eyes in a figure 8
-          leds[rightEye[i]] = sentColor; // both eyes in a figure 8
-          leds[leftEye[icross]] = sentColor; // both eyes in a figure 8
-          leds[rightEye[icross]] = sentColor; // both eyes in a figure 8
+          leds[leftEye[i]] = sentColor;
+          leds[rightEye[i]] = sentColor;
+          leds[leftEye[icross]] = sentColor;
+          leds[rightEye[icross]] = sentColor;
         } else {
-          leds[leftEye[i]].fadeToBlackBy(200); // both eyes in a figure 8
-          leds[rightEye[i]].fadeToBlackBy(200); // both eyes in a figure 8
-          leds[leftEye[icross]].fadeToBlackBy(200); // both eyes in a figure 8
-          leds[rightEye[icross]].fadeToBlackBy(200); // both eyes in a figure 8
+          leds[leftEye[i]].fadeToBlackBy(200);
+          leds[rightEye[i]].fadeToBlackBy(200);
+          leds[leftEye[icross]].fadeToBlackBy(200);
+          leds[rightEye[icross]].fadeToBlackBy(200);
         }
         break;
       case 0:
       case 4:
       case 6:
-        leds[leftEye[i]].fadeToBlackBy(200); // both eyes in a figure 8
-        leds[rightEye[i]].fadeToBlackBy(200); // both eyes in a figure 8
+        leds[leftEye[i]].fadeToBlackBy(200);
+        leds[rightEye[i]].fadeToBlackBy(200);
         uint8_t ledA = random8(9, 25);
         uint8_t ledB = random8(25, 41);
-        leds[ledA] = sentColor; // both eyes in a figure 8
-        leds[ledB] = sentColor; // both eyes in a figure 8
+        leds[ledA] = sentColor;
+        leds[ledB] = sentColor;
         break;
     }
   }
